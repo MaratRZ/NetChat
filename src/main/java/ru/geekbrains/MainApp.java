@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import java.util.Objects;
 
 public class MainApp extends Application {
+    public static Stage primaryStage;
 
     public static void main(String[] args) {
         launch(args);
@@ -16,6 +17,8 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        this.primaryStage = primaryStage;
+
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/chatWindow.fxml"));
         primaryStage.setTitle("Сетевой чат");
         primaryStage.setScene(new Scene(root, 350, 400));
