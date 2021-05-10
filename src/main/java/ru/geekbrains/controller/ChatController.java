@@ -3,19 +3,28 @@ package ru.geekbrains.controller;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import ru.geekbrains.Config;
 import ru.geekbrains.MainApp;
+import ru.geekbrains.TCPConnection;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Objects;
 
 
-public class chatController {
+public class ChatController {
     @FXML
     private TextArea msgTA;
     @FXML
@@ -48,6 +57,8 @@ public class chatController {
     @FXML
     private void initialize() throws IOException {
         try {
+            openLoginWindow();
+            MainApp.primaryStage.setTitle(MainApp.primaryStage.getTitle() + " (" + Config.nickName + ")");
             openConnection();
             addCloseListener();
         } catch (IOException e) {
@@ -59,6 +70,10 @@ public class chatController {
             e.printStackTrace();
             throw e;
         }
+    }
+
+    private void openFile() {
+
     }
 
     @FXML
@@ -111,5 +126,21 @@ public class chatController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void openLoginWindow() throws IOException {
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/fxml/authWindow.fxml")));
+        Stage loginStage = new Stage();
+        loginStage.setResizable(false);
+        loginStage.initModality(Modality.APPLICATION_MODAL);
+        loginStage.setScene(new Scene(root));
+        loginStage.setTitle("Авторизация");
+        loginStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                System.exit(0);
+            }
+        });
+        loginStage.showAndWait();
     }
 }

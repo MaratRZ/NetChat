@@ -1,4 +1,4 @@
-package ru.geekbrains.controller;
+package ru.geekbrains;
 
 import java.io.IOException;
 import java.net.Socket;

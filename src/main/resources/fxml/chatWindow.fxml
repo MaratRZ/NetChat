@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox id="mainVB" alignment="CENTER" xmlns="http://javafx.com/javafx/1" xmlns:fx="http://javafx.com/fxml/" fx:controller="ru.geekbrains.controller.chatController">
+<VBox id="mainVB" alignment="CENTER" xmlns="http://javafx.com/javafx/1" xmlns:fx="http://javafx.com/fxml/" fx:controller="ru.geekbrains.controller.ChatController">
     <children>
         <TextArea fx:id="msgTA" editable="false" prefHeight="246.0" prefWidth="273.0" wrapText="true" VBox.vgrow="ALWAYS" focusTraversable="false"/>
         <HBox id="bottomHB" prefHeight="0.0" prefWidth="200.0" spacing="5.0">
