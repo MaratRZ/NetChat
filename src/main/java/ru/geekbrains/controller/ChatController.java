@@ -18,7 +18,6 @@ import ru.geekbrains.TCPConnection;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Objects;
@@ -70,10 +69,6 @@ public class ChatController {
             e.printStackTrace();
             throw e;
         }
-    }
-
-    private void openFile() {
-
     }
 
     @FXML
@@ -135,12 +130,7 @@ public class ChatController {
         loginStage.initModality(Modality.APPLICATION_MODAL);
         loginStage.setScene(new Scene(root));
         loginStage.setTitle("Авторизация");
-        loginStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                System.exit(0);
-            }
-        });
+        loginStage.setOnCloseRequest(event -> System.exit(0));
         loginStage.showAndWait();
     }
 }
