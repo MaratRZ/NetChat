@@ -134,12 +134,7 @@ public class ChatController {
         loginStage.initModality(Modality.APPLICATION_MODAL);
         loginStage.setScene(new Scene(root));
         loginStage.setTitle("Авторизация");
-        loginStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                System.exit(0);
-            }
-        });
+        loginStage.setOnCloseRequest(event -> System.exit(0));
         loginStage.showAndWait();
     }
 
