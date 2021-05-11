@@ -16,10 +16,7 @@ import ru.geekbrains.Config;
 import ru.geekbrains.MainApp;
 import ru.geekbrains.TCPConnection;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.Objects;
 
@@ -32,12 +29,14 @@ public class ChatController {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
+    private FileWriter fileWriter;
 
     @FXML
     private void sendMessage(ActionEvent event) {
         if (inputTF.getText().isEmpty()) return;
         msgTA.appendText(inputTF.getText() + "\n");
         sendMessage(inputTF.getText());
+        writeFile(Config.nickName + ": " + inputTF.getText());
         inputTF.clear();
     }
 
@@ -60,6 +59,7 @@ public class ChatController {
             openLoginWindow();
             MainApp.primaryStage.setTitle(MainApp.primaryStage.getTitle() + " (" + Config.nickName + ")");
             openConnection();
+            openFile("history_" + Config.login + ".txt");
             addCloseListener();
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -72,15 +72,12 @@ public class ChatController {
         }
     }
 
-    private void openFile() {
-
-    }
-
     @FXML
     private void addCloseListener() {
         EventHandler<WindowEvent> onCloseRequest = MainApp.primaryStage.getOnCloseRequest();
         MainApp.primaryStage.setOnCloseRequest(event -> {
             closeConnection();
+            closeFile();
             if (onCloseRequest != null) {
                 onCloseRequest.handle(event);
             }
@@ -98,9 +95,11 @@ public class ChatController {
                     String serverMsg = in.readUTF();
                     if (serverMsg.equalsIgnoreCase("/end")) {
                         msgTA.appendText("Сервер закрыл соединение" + "\n");
+                        writeFile(serverMsg + "\n");
                         break;
                     } else {
                         msgTA.appendText(serverMsg + "\n");
+                        writeFile(serverMsg + "\n");
                     }
                 }
             } catch (Exception e) {
@@ -142,5 +141,25 @@ public class ChatController {
             }
         });
         loginStage.showAndWait();
+    }
+
+    private void openFile(String fileName) throws IOException {
+        fileWriter = new FileWriter(fileName, true);
+    }
+
+    private void writeFile(String text) {
+        try {
+            fileWriter.write(text + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void closeFile() {
+        try {
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
