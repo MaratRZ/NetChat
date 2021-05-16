@@ -29,6 +29,8 @@ public class ChatController {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
+    private String historyFileName;
+
     private FileWriter fileWriter;
 
     @FXML
@@ -59,7 +61,9 @@ public class ChatController {
             openLoginWindow();
             MainApp.primaryStage.setTitle(MainApp.primaryStage.getTitle() + " (" + Config.nickName + ")");
             openConnection();
-            openFile("history_" + Config.login + ".txt");
+            setHistoryFileName("history_" + Config.login + ".txt");
+            openFile(getHistoryFileName());
+            loadHistory(getHistoryFileName(), 10);
             addCloseListener();
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -153,6 +157,40 @@ public class ChatController {
     private void closeFile() {
         try {
             fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getHistoryFileName() {
+        return historyFileName;
+    }
+
+    private void setHistoryFileName(String historyFileName) {
+        this.historyFileName = historyFileName;
+    }
+
+    private void loadHistory(String fileName, int lineCount) {
+        if (lineCount == 0) return;
+        File file = new File(fileName);
+        StringBuilder builder = new StringBuilder();
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(fileName, "r")) {
+            long pos = file.length();
+            if (pos == 0) return;
+            randomAccessFile.seek(pos);
+
+            int n = lineCount;
+            for (long i = pos - 1; i >= 0; i--) {
+                randomAccessFile.seek(i);
+                char c = (char) randomAccessFile.read();
+                if (c == '\n') n--;
+                if (n == 0) break;
+                builder.append(c);
+            }
+            builder.reverse();
+            msgTA.appendText(new String(builder.toString().getBytes("ISO-8859-1"), "UTF-8"));
+        } catch (FileNotFoundException e) {
+           e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
