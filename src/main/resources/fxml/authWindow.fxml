@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox prefHeight="140.0" prefWidth="400.0" spacing="5" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.geekbrains.controller.AuthController">
+<VBox prefHeight="140.0" prefWidth="400.0" spacing="5" xmlns="http://javafx.com/javafx/1" xmlns:fx="http://javafx.com/fxml/" fx:controller="ru.geekbrains.controller.AuthController">
     <Label text="Логин" />
     <TextField fx:id="loginTF" promptText="Логин" />
     <Label text="Пароль" />

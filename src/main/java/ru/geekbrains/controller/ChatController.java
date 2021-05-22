@@ -16,9 +16,7 @@ import ru.geekbrains.Config;
 import ru.geekbrains.MainApp;
 import ru.geekbrains.TCPConnection;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.Objects;
 
@@ -31,12 +29,16 @@ public class ChatController {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
+    private String historyFileName;
+
+    private FileWriter fileWriter;
 
     @FXML
     private void sendMessage(ActionEvent event) {
         if (inputTF.getText().isEmpty()) return;
         msgTA.appendText(inputTF.getText() + "\n");
         sendMessage(inputTF.getText());
+        writeFile(Config.nickName + ": " + inputTF.getText());
         inputTF.clear();
     }
 
@@ -59,6 +61,9 @@ public class ChatController {
             openLoginWindow();
             MainApp.primaryStage.setTitle(MainApp.primaryStage.getTitle() + " (" + Config.nickName + ")");
             openConnection();
+            setHistoryFileName("history_" + Config.login + ".txt");
+            openFile(getHistoryFileName());
+            loadHistory(getHistoryFileName(), 10);
             addCloseListener();
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -76,6 +81,7 @@ public class ChatController {
         EventHandler<WindowEvent> onCloseRequest = MainApp.primaryStage.getOnCloseRequest();
         MainApp.primaryStage.setOnCloseRequest(event -> {
             closeConnection();
+            closeFile();
             if (onCloseRequest != null) {
                 onCloseRequest.handle(event);
             }
@@ -93,9 +99,11 @@ public class ChatController {
                     String serverMsg = in.readUTF();
                     if (serverMsg.equalsIgnoreCase("/end")) {
                         msgTA.appendText("Сервер закрыл соединение" + "\n");
+                        writeFile(serverMsg + "\n");
                         break;
                     } else {
                         msgTA.appendText(serverMsg + "\n");
+                        writeFile(serverMsg + "\n");
                     }
                 }
             } catch (Exception e) {
@@ -132,5 +140,59 @@ public class ChatController {
         loginStage.setTitle("Авторизация");
         loginStage.setOnCloseRequest(event -> System.exit(0));
         loginStage.showAndWait();
+    }
+
+    private void openFile(String fileName) throws IOException {
+        fileWriter = new FileWriter(fileName, true);
+    }
+
+    private void writeFile(String text) {
+        try {
+            fileWriter.write(text + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void closeFile() {
+        try {
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getHistoryFileName() {
+        return historyFileName;
+    }
+
+    private void setHistoryFileName(String historyFileName) {
+        this.historyFileName = historyFileName;
+    }
+
+    private void loadHistory(String fileName, int lineCount) {
+        if (lineCount == 0) return;
+        File file = new File(fileName);
+        StringBuilder builder = new StringBuilder();
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(fileName, "r")) {
+            long pos = file.length();
+            if (pos == 0) return;
+            randomAccessFile.seek(pos);
+
+            int n = lineCount;
+            for (long i = pos - 1; i >= 0; i--) {
+                randomAccessFile.seek(i);
+                char c = (char) randomAccessFile.read();
+                if (c == '\n') n--;
+                if (n == 0) break;
+                builder.append(c);
+            }
+            builder.reverse();
+            msgTA.appendText(new String(builder.toString().getBytes("ISO-8859-1"), "UTF-8"));
+        } catch (FileNotFoundException e) {
+           e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

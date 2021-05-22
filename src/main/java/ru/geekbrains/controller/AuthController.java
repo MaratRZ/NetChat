@@ -38,6 +38,7 @@ public class AuthController {
                         String strFromServer = in.readUTF();
                         //   /authok nick1
                         if (strFromServer.startsWith("/authok")) {
+                            Config.login = loginTF.getText();
                             Config.nickName = strFromServer.split(" ")[1];
                             //TODO работу с объектами fx запускаем через эту конструкцию
                             Platform.runLater(() -> {
